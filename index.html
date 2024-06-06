@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistics Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    #container {
+        width: 80%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    input[type="text"] {
+        width: 300px;
+        padding: 8px;
+        margin: 10px;
+    }
+    input[type="button"] {
+        padding: 8px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    #result {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<div id="container">
+    <h2>Statistics Calculator</h2>
+    <input type="text" id="numbers" placeholder="Enter numbers separated by commas">
+    <br>
+    <input type="button" value="Calculate" onclick="calculateStatistics()">
+    <div id="result"></div>
+</div>
+
+<script>
+    function calculateStatistics() {
+        var numbersInput = document.getElementById('numbers').value;
+        var numbersArray = numbersInput.split(',').map(Number).filter(Boolean);
+
+        if (numbersArray.length === 0) {
+            document.getElementById('result').innerHTML = 'Please enter valid numbers.';
+            return;
+        }
+
+        var mean = numbersArray.reduce((a, b) => a + b, 0) / numbersArray.length;
+        
+        var sortedNumbers = numbersArray.slice().sort((a, b) => a - b);
+        var median = calculateMedian(sortedNumbers);
+        
+        var variance = numbersArray.map(num => Math.pow(num - mean, 2)).reduce((a, b) => a + b, 0) / numbersArray.length;
+        var standardDeviation = Math.sqrt(variance);
+        
+        var quartiles = calculateQuartiles(sortedNumbers);
+        var interQuartileRange = quartiles[2] - quartiles[0];
+
+        document.getElementById('result').innerHTML = `
+            Mean: ${mean.toFixed(2)} <br>
+            Median: ${median} <br>
+            Standard Deviation: ${standardDeviation.toFixed(2)} <br>
+            Interquartile Range: ${interQuartileRange.toFixed(2)}
+        `;
+    }
+
+    function calculateMedian(sortedArray) {
+        var length = sortedArray.length;
+        if (length % 2 === 0) {
+            return (sortedArray[length / 2 - 1] + sortedArray[length / 2]) / 2;
+        } else {
+            return sortedArray[Math.floor(length / 2)];
+        }
+    }
+
+    function calculateQuartiles(sortedArray) {
+        var q1, q2, q3;
+        var midIndex = Math.floor(sortedArray.length / 2);
+        q2 = calculateMedian(sortedArray);
+        if (sortedArray.length % 2 === 0) {
+            q1 = calculateMedian(sortedArray.slice(0, midIndex));
+            q3 = calculateMedian(sortedArray.slice(midIndex));
+        } else {
+            q1 = calculateMedian(sortedArray.slice(0, midIndex));
+            q3 = calculateMedian(sortedArray.slice(midIndex + 1));
+        }
+        return [q1, q2, q3];
+    }
+</script>
+
+</body>
+</html>
